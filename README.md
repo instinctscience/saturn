@@ -9,12 +9,29 @@ Once your application is configured to send Ecto telemetry events to Saturn (see
 ```elixir
 # Get ten most-made queries
 Saturn.top_offenders(10)
+#=>[
+#=>  {%Saturn.Aggregator.Query{
+#=>     query: "SELECT DISTINCT o0.\"queue\" FROM \"public\".\"oban_jobs\" AS o0 WHERE (o0.\"state\" = 'available') AND (NOT (o0.\"queue\" IS NULL))",
+#=>     stacktrace: [
+#=>       {Ecto.Repo.Supervisor, :tuplet, 2,
+#=>        [file: 'lib/ecto/repo/supervisor.ex', line: 162]},
+#=>       {MyApp.Repo, :all, 2, [file: 'lib/my_app/repo.ex', line: 2]},
+#=>       {Oban.Plugins.Stager, :notify_queues, 1,
+#=>        [file: 'lib/oban/plugins/stager.ex', line: 131]},
+#=>       {Oban.Plugins.Stager, :"-check_leadership_and_stage/1-fun-0-", 1,
+#=>        [file: 'lib/oban/plugins/stager.ex', line: 98]},
+#=>       {Ecto.Adapters.SQL, :"-checkout_or_transaction/4-fun-0-", 3,
+#=>        [file: 'lib/ecto/adapters/sql.ex', line: 1202]},
+#=>       ...
+#=>   }, 100},
+#=>   ...
 ```
 
 If you want to clear out all recorded queries, invoke `Saturn.clear/0`:
 
 ```elixir
 Saturn.clear()
+#=> :ok
 ```
 
 ## Installation
