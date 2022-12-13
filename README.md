@@ -37,9 +37,9 @@ First, your application needs to be configured to send Ecto telemetry events to 
 :ok =
   :telemetry.attach(
     "saturn-aggregator",
-	[:myapp, :repo, :query],
-	&Saturn.handle_query/4,
-	nil
+    [:myapp, :repo, :query],
+    &Saturn.handle_query/4,
+    nil
   )
 ```
 
