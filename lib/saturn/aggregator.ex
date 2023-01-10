@@ -1,6 +1,5 @@
 defmodule Saturn.Aggregator do
   use Agent
-  require Logger
 
   defmodule Query do
     defstruct [:query, stacktrace: nil]
