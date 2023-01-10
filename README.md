@@ -72,4 +72,22 @@ config :myapp, :repo,
   stacktrace: true
 ```
 
-That's it!  Next time your application starts, it should be sending Ecto telemetry events to Saturn for aggregation.
+By default, Saturn starts disabled (i.e. not collecting query data) to save memory.  When you'd like to start collecting query data, run:
+
+```elixir
+Saturn.enable()
+```
+
+To disable Saturn again, run:
+
+```elixir
+Saturn.disable()
+```
+
+You can also configure Saturn to be enabled at start-up using the `enable` key of its configuration:
+
+```elixir
+config :saturn, enable: true
+```
+
+That's it!  Next time your application starts, it should send Ecto telemetry events to Saturn for aggregation.

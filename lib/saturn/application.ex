@@ -6,7 +6,7 @@ defmodule Saturn.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      Saturn.Aggregator
+      {Saturn.Aggregator, Application.get_all_env(:saturn)}
     ]
 
     opts = [strategy: :one_for_one, name: Saturn.Supervisor]

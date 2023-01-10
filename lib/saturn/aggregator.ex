@@ -1,6 +1,10 @@
 defmodule Saturn.Aggregator do
   use Agent
 
+  defmodule State do
+    defstruct enabled: false, queries: %{}
+  end
+
   defmodule Query do
     defstruct [:query, :stacktrace]
   end
@@ -19,22 +23,35 @@ defmodule Saturn.Aggregator do
   end
 
   def top_offenders(num) do
-    queries = Agent.get(__MODULE__, &Function.identity/1)
+    queries = Agent.get(__MODULE__, & &1.queries)
 
     queries
     |> Enum.sort_by(fn {_query, count} -> count end, :desc)
     |> Enum.take(num)
   end
 
+  def enable() do
+    Agent.update(__MODULE__, fn state -> %State{state | enabled: true} end)
+  end
+
+  def disable() do
+    Agent.update(__MODULE__, fn state -> %State{state | enabled: false} end)
+  end
+
   def clear() do
-    Agent.update(__MODULE__, fn _ -> %{} end)
+    Agent.update(__MODULE__, fn state -> %State{state | queries: %{}} end)
   end
 
   defp add_query(query) do
-    Agent.update(__MODULE__, fn state -> Map.update(state, query, 1, &(&1 + 1)) end)
+    if Agent.get(__MODULE__, & &1.enabled) do
+      Agent.update(__MODULE__, fn state = %{queries: queries} ->
+        %State{state | queries: Map.update(queries, query, 1, &(&1 + 1))}
+      end)
+    end
   end
 
-  def start_link(_) do
-    Agent.start_link(fn -> %{} end, name: __MODULE__)
+  def start_link(opts) do
+    enabled = Keyword.get(opts, :enable, false)
+    Agent.start_link(fn -> %State{enabled: enabled} end, name: __MODULE__)
   end
 end
