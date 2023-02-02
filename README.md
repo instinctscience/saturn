@@ -26,6 +26,32 @@ Saturn.report()
 #=>   ...
 ```
 
+The return format is `{query, count}` where `query` contains the query text as well as the stacktrace and `count` is the number of times the query was made.
+
+Saturn also supports querying by time:
+
+```elixir
+Saturn.report(:time)
+#=>[
+#=>  {%Saturn.Aggregator.Query{
+#=>     query: "SELECT DISTINCT o0.\"queue\" FROM \"public\".\"oban_jobs\" AS o0 WHERE (o0.\"state\" = 'available') AND (NOT (o0.\"queue\" IS NULL))",
+#=>     stacktrace: [
+#=>       {Ecto.Repo.Supervisor, :tuplet, 2,
+#=>        [file: 'lib/ecto/repo/supervisor.ex', line: 162]},
+#=>       {MyApp.Repo, :all, 2, [file: 'lib/my_app/repo.ex', line: 2]},
+#=>       {Oban.Plugins.Stager, :notify_queues, 1,
+#=>        [file: 'lib/oban/plugins/stager.ex', line: 131]},
+#=>       {Oban.Plugins.Stager, :"-check_leadership_and_stage/1-fun-0-", 1,
+#=>        [file: 'lib/oban/plugins/stager.ex', line: 98]},
+#=>       {Ecto.Adapters.SQL, :"-checkout_or_transaction/4-fun-0-", 3,
+#=>        [file: 'lib/ecto/adapters/sql.ex', line: 1202]},
+#=>       ...
+#=>   }, 157},
+#=>   ...
+```
+
+Here, the second element of each tuple is the number of milliseconds that have been spent running the query (cumulatively).
+
 If you want to clear out all recorded queries, invoke `Saturn.clear/0`:
 
 ```elixir

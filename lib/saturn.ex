@@ -5,6 +5,7 @@ defmodule Saturn do
 
   defdelegate handle_query(name, measurements, metadata, config), to: __MODULE__.Aggregator
   defdelegate report(), to: __MODULE__.Aggregator
+  defdelegate report(by), to: __MODULE__.Aggregator
   defdelegate enable(), to: __MODULE__.Aggregator
   defdelegate disable(), to: __MODULE__.Aggregator
   defdelegate clear(), to: __MODULE__.Aggregator
