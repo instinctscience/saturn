@@ -2,7 +2,7 @@ defmodule Saturn.Aggregator do
   use Agent
 
   defmodule Query do
-    defstruct [:query, stacktrace: nil]
+    defstruct [:query, :stacktrace]
   end
 
   # measurements:
