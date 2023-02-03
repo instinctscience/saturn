@@ -22,12 +22,10 @@ defmodule Saturn.Aggregator do
     add_query(%Query{query: query, stacktrace: Map.get(metadata, :stacktrace)})
   end
 
-  def top_offenders(num) do
+  def report() do
     queries = Agent.get(__MODULE__, & &1.queries)
 
-    queries
-    |> Enum.sort_by(fn {_query, count} -> count end, :desc)
-    |> Enum.take(num)
+    Enum.sort_by(queries, fn {_query, count} -> count end, :desc)
   end
 
   def enable() do

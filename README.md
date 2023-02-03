@@ -7,8 +7,7 @@ A child-eating monster; a library to help you find and eliminate N+1 queries.
 Once your application is configured to send Ecto telemetry events to Saturn (see below), you can query for the most-made queries:
 
 ```elixir
-# Get ten most-made queries
-Saturn.top_offenders(10)
+Saturn.report()
 #=>[
 #=>  {%Saturn.Aggregator.Query{
 #=>     query: "SELECT DISTINCT o0.\"queue\" FROM \"public\".\"oban_jobs\" AS o0 WHERE (o0.\"state\" = 'available') AND (NOT (o0.\"queue\" IS NULL))",
