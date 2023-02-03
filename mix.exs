@@ -21,7 +21,8 @@ defmodule Saturn.MixProject do
 
   defp deps do
     [
-      {:telemetry, "~> 1.1"}
+      {:telemetry, "~> 1.1"},
+      {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false}
     ]
   end
 
