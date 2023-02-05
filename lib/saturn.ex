@@ -3,10 +3,15 @@ defmodule Saturn do
   Saturn, the child-eating monster, is here to devour the N of your N+1 queries.
   """
 
-  defdelegate handle_query(name, measurements, metadata, config), to: __MODULE__.Aggregator
-  defdelegate report(), to: __MODULE__.Aggregator
-  defdelegate report(by), to: __MODULE__.Aggregator
-  defdelegate enable(), to: __MODULE__.Aggregator
-  defdelegate disable(), to: __MODULE__.Aggregator
-  defdelegate clear(), to: __MODULE__.Aggregator
+  alias __MODULE__.Aggregator
+  alias __MODULE__.Reporter
+
+  defdelegate handle_query(name, measurements, metadata, config), to: Aggregator
+  defdelegate enable(), to: Aggregator
+  defdelegate disable(), to: Aggregator
+  defdelegate clear(), to: Aggregator
+
+  def report(by \\ :count) do
+    Reporter.export(by, Aggregator.queries())
+  end
 end
