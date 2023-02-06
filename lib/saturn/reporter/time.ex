@@ -2,7 +2,7 @@ defmodule Saturn.Reporter.Time do
   @behaviour Saturn.Reporter
 
   @impl Saturn.Reporter
-  def export(queries) do
+  def report(queries) do
     {:ok,
      queries
      |> Enum.map(fn {query, stats} -> {query, query_time(stats.time)} end)

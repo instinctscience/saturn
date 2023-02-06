@@ -2,7 +2,7 @@ defmodule Saturn.Reporter.Count do
   @behaviour Saturn.Reporter
 
   @impl Saturn.Reporter
-  def export(queries) do
+  def report(queries) do
     {:ok,
      queries
      |> Enum.map(fn {query, stats} -> {query, stats.count} end)

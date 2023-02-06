@@ -1,11 +1,11 @@
 defmodule Saturn.Reporter do
-  @callback export(%{Saturn.Query.t() => Saturn.QueryStats.t()}) :: term()
+  @callback report(%{Saturn.Query.t() => Saturn.QueryStats.t()}) :: term()
 
   @type reporter_specifier :: :count | :time
 
-  @spec export(reporter_specifier, %{Query.t() => QueryStats.t()}) :: term()
-  def export(by, queries) do
-    reporter(by).export(queries)
+  @spec report(reporter_specifier, %{Query.t() => QueryStats.t()}) :: term()
+  def report(by, queries) do
+    reporter(by).report(queries)
   end
 
   # Lacks the extensibility of Viz's approach, but doesn't require

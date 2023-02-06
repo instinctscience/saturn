@@ -12,6 +12,6 @@ defmodule Saturn do
   defdelegate clear(), to: Aggregator
 
   def report(by \\ :count) do
-    Reporter.export(by, Aggregator.queries())
+    Reporter.report(by, Aggregator.queries())
   end
 end
