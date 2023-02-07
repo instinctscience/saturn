@@ -2,7 +2,7 @@ defmodule SaturnTest do
   use ExUnit.Case, async: false
   doctest Saturn
 
-  @default_measurements %{total_time: 123_456_789}
+  @default_measurements %{total_time: System.convert_time_unit(123_456, :millisecond, :native)}
   @default_metadata %{
     query: "SELECT * FROM users;",
     stacktrace: [{Saturn, :fake, 1, [file: "saturn.ex", line: 5]}]
@@ -53,8 +53,18 @@ defmodule SaturnTest do
       send_query()
 
       send_query(
-        measurements: %{@default_measurements | total_time: 123_456_789_000},
-        metadata: %{@default_metadata | query: "SELECT * FROM users WHERE id = 5;"}
+        measurements: %{
+          @default_measurements
+          | total_time: System.convert_time_unit(12_345_678, :millisecond, :native)
+        },
+        metadata: %{
+          @default_metadata
+          | query: "SELECT * FROM users WHERE id = 5;",
+            stacktrace: [
+              {Saturn, :foobar, 2, [file: "saturn.ex", line: 10]},
+              {Saturn.Foobar, :do_thing, 3, file: "saturn/foobar.ex", line: 26}
+            ]
+        }
       )
     end
 
@@ -73,8 +83,8 @@ defmodule SaturnTest do
 
       assert {:ok,
               [
-                {%{query: "SELECT * FROM users WHERE id = 5;"}, _},
-                {%{query: "SELECT * FROM users;"}, _}
+                {%{query: "SELECT * FROM users WHERE id = 5;"}, 12_345_678},
+                {%{query: "SELECT * FROM users;"}, 246_912}
               ]} = report
     end
   end
