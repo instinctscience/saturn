@@ -87,6 +87,20 @@ defmodule SaturnTest do
                 {%{query: "SELECT * FROM users;"}, 246_912}
               ]} = report
     end
+
+    test "can provide 'prof' style output" do
+      report = Saturn.report(:prof)
+
+      assert {:ok,
+              """
+              Function                                                      Count %Count %Time
+              Saturn.fake/1                                                     2     66     1
+                SELECT * FROM users;                                            2     66     1
+              Saturn.foobar/2                                                   1     33    98
+                Saturn.Foobar.do_thing/3                                        1     33    98
+                  SELECT * FROM users WHERE id = 5;                             1     33    98\
+              """} == report
+    end
   end
 
   defp send_query(overrides \\ []) do

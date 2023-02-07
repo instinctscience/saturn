@@ -1,7 +1,7 @@
 defmodule Saturn.Reporter do
   @callback report(%{Saturn.Query.t() => Saturn.QueryStats.t()}) :: term()
 
-  @type reporter_specifier :: :count | :time
+  @type reporter_specifier :: :count | :time | :prof
 
   @spec report(reporter_specifier, %{Query.t() => QueryStats.t()}) :: term()
   def report(by, queries) do
@@ -12,4 +12,5 @@ defmodule Saturn.Reporter do
   # string-manipulation metaprogramming.
   defp reporter(:count), do: __MODULE__.Count
   defp reporter(:time), do: __MODULE__.Time
+  defp reporter(:prof), do: __MODULE__.Prof
 end
