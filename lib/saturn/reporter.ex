@@ -3,7 +3,7 @@ defmodule Saturn.Reporter do
 
   @type reporter_specifier :: :count | :time | :prof
 
-  @spec report(reporter_specifier, %{Query.t() => QueryStats.t()}) :: term()
+  @spec report(reporter_specifier, %{Saturn.Query.t() => Saturn.QueryStats.t()}) :: term()
   def report(by, queries) do
     reporter(by).report(queries)
   end
