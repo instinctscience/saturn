@@ -55,7 +55,7 @@ defmodule SaturnTest do
       send_query(
         measurements: %{
           @default_measurements
-          | total_time: System.convert_time_unit(12_345_678, :millisecond, :native)
+          | total_time: System.convert_time_unit(12_345, :millisecond, :native)
         },
         metadata: %{
           @default_metadata
@@ -83,8 +83,8 @@ defmodule SaturnTest do
 
       assert {:ok,
               [
-                {%{query: "SELECT * FROM users WHERE id = 5;"}, 12_345_678},
-                {%{query: "SELECT * FROM users;"}, 246_912}
+                {%{query: "SELECT * FROM users;"}, 246_912},
+                {%{query: "SELECT * FROM users WHERE id = 5;"}, 12_345}
               ]} = report
     end
 
@@ -93,12 +93,12 @@ defmodule SaturnTest do
 
       assert {:ok,
               """
-              Function                                                      Count %Count %Time
-              Saturn.fake/1                                                     2     66     1
-                SELECT * FROM users;                                            2     66     1
-              Saturn.foobar/2                                                   1     33    98
-                Saturn.Foobar.do_thing/3                                        1     33    98
-                  SELECT * FROM users WHERE id = 5;                             1     33    98\
+              Source                                                                   Count %Count     Time %Time
+              Saturn.fake/1                                                                2     66   246.91    95
+                SELECT * FROM users;                                                       2     66   246.91    95
+              Saturn.Foobar.do_thing/3                                                     1     33    12.35     4
+                Saturn.foobar/2                                                            1     33    12.35     4
+                  SELECT * FROM users WHERE id = 5;                                        1     33    12.35     4\
               """} == report
     end
   end

@@ -144,7 +144,7 @@ defmodule Saturn.Reporter.Prof do
 
   def format_tree(tree) do
     header =
-      "Source                                                                       Count %Count Time %Time"
+      "Source                                                                   Count %Count     Time %Time"
 
     body = Map.merge(tree.queries, tree.children) |> format_body("")
 
@@ -180,15 +180,17 @@ defmodule Saturn.Reporter.Prof do
   defp format_item(name, stats, prefix), do: format_row(name, stats, prefix)
 
   defp format_row(name, stats, prefix) do
-    prefix = "#{prefix}#{format_name(name)}" |> String.slice(0, 75) |> String.pad_trailing(76)
+    prefix = "#{prefix}#{format_name(name)}" |> String.slice(0, 72) |> String.pad_trailing(73)
     count_str = String.pad_leading(to_string(stats.cumulative_count), 5)
     count_per_str = String.pad_leading(to_string(stats.percent_count), 7)
 
     time_str =
-      String.pad_leading(
-        to_string(System.convert_time_unit(stats.cumulative_time, :native, :millisecond) / 100),
-        6
-      )
+      stats.cumulative_time
+      |> System.convert_time_unit(:native, :millisecond)
+      |> Kernel./(1000)
+      |> Float.round(2)
+      |> to_string()
+      |> String.pad_leading(9)
 
     time_per_str = String.pad_leading(to_string(stats.percent_time), 6)
 
