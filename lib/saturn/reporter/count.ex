@@ -1,4 +1,8 @@
 defmodule Saturn.Reporter.Count do
+  @moduledoc false
+
+  # Report that shows queries listed by their count, descending
+
   @behaviour Saturn.Reporter
   import Saturn.Reporter.Util
 

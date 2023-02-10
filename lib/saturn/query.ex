@@ -1,4 +1,8 @@
 defmodule Saturn.Query do
+  @moduledoc false
+
+  # Struct that represents an abstract query; a query's 'identity', in a way.
+
   @type stacktrace :: [
           {module, atom, non_neg_integer, [file: charlist(), line: non_neg_integer()]}
         ]

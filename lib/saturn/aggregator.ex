@@ -7,6 +7,10 @@ defmodule Saturn.Aggregator do
   alias Saturn.QueryStats
 
   defmodule State do
+    @moduledoc false
+
+    # Literally just the Agent state for Saturn.Aggregator
+
     @type t :: %__MODULE__{
             enabled: boolean(),
             queries: %{Query.t() => QueryStats.t()}
@@ -40,14 +44,17 @@ defmodule Saturn.Aggregator do
     Agent.get(__MODULE__, & &1.queries)
   end
 
+  @spec enable() :: :ok
   def enable() do
     Agent.update(__MODULE__, fn state -> %State{state | enabled: true} end)
   end
 
+  @spec disable() :: :ok
   def disable() do
     Agent.update(__MODULE__, fn state -> %State{state | enabled: false} end)
   end
 
+  @spec clear() :: :ok
   def clear() do
     Agent.update(__MODULE__, fn state -> %State{state | queries: %{}} end)
   end

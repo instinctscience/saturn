@@ -1,9 +1,14 @@
 defmodule Saturn.Reporter do
+  @moduledoc false
+
+  # A behaviour-dispatcher for generating reports.
+  # This module specifies a behaviour for reporters to adhere to and has a
+  # `report` function that dispatches to the requested reporter.
+
   @callback report(%{Saturn.Query.t() => Saturn.QueryStats.t()}) :: String.t()
 
-  @type reporter_specifier :: :count | :time | :prof
-
-  @spec report(%{Saturn.Query.t() => Saturn.QueryStats.t()}, reporter_specifier) :: String.t()
+  @spec report(%{Saturn.Query.t() => Saturn.QueryStats.t()}, Saturn.report_specifier()) ::
+          String.t()
   def report(queries, by) do
     reporter(by).report(queries)
   end

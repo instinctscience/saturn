@@ -8,7 +8,11 @@ defmodule Saturn.MixProject do
       elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      aliases: aliases()
+      aliases: aliases(),
+      docs: [
+        main: "readme",
+        extras: ["README.md"]
+      ]
     ]
   end
 
@@ -22,6 +26,7 @@ defmodule Saturn.MixProject do
   defp deps do
     [
       {:telemetry, "~> 1.1"},
+      {:ex_doc, "~> 0.29", only: [:dev], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false}
     ]
   end

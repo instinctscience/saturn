@@ -1,4 +1,8 @@
 defmodule Saturn.Reporter.Time do
+  @moduledoc false
+
+  # Report that shows queries listed by their total time consumption, descending
+
   @behaviour Saturn.Reporter
   import Saturn.Reporter.Util
 

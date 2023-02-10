@@ -1,8 +1,21 @@
 defmodule Saturn.Reporter.Prof do
+  @moduledoc false
+
+  # Report that shows a tree-like view of the aggregated query's sources and
+  # associated costs.
+  # The goal of this report is to help identify which _functions_ within a
+  # codebase are responsible for a disproportionate amount of cost.
+
   @behaviour Saturn.Reporter
   import Saturn.Reporter.Util
 
   defmodule Stats do
+    @moduledoc false
+
+    # A collection of statistics associated either directly to a query or to a
+    # node wherein the stats are aggregated from its queries and the queries of
+    # its children (if any).
+
     @type t :: %__MODULE__{
             cumulative_count: pos_integer(),
             percent_count: pos_integer(),
