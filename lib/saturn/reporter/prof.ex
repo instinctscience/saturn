@@ -1,5 +1,6 @@
 defmodule Saturn.Reporter.Prof do
   @behaviour Saturn.Reporter
+  import Saturn.Reporter.Util
 
   defmodule Stats do
     @type t :: %__MODULE__{
@@ -34,11 +35,9 @@ defmodule Saturn.Reporter.Prof do
 
   @impl Saturn.Reporter
   def report(queries) do
-    {:ok,
-     queries
-     |> build_tree()
-     |> format_tree()
-     |> tap(&IO.puts/1)}
+    queries
+    |> build_tree()
+    |> format_tree()
   end
 
   def build_tree(queries) do
@@ -198,7 +197,7 @@ defmodule Saturn.Reporter.Prof do
   end
 
   defp format_name({mod, fun, arity}) do
-    format_name("#{String.replace_prefix(to_string(mod), "Elixir.", "")}.#{fun}/#{arity}")
+    format_mfa({mod, fun, arity})
   end
 
   defp format_name(str) do

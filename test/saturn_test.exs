@@ -1,5 +1,6 @@
 defmodule SaturnTest do
   use ExUnit.Case, async: false
+  import ExUnit.CaptureIO
   doctest Saturn
 
   @default_measurements %{total_time: System.convert_time_unit(123_456, :millisecond, :native)}
@@ -61,45 +62,58 @@ defmodule SaturnTest do
           @default_metadata
           | query: "SELECT * FROM users WHERE id = 5;",
             stacktrace: [
-              {Saturn, :foobar, 2, [file: "saturn.ex", line: 10]},
-              {Saturn.Foobar, :do_thing, 3, file: "saturn/foobar.ex", line: 26}
+              {Saturn.Foobar, :do_thing, 3, file: "saturn/foobar.ex", line: 26},
+              {Saturn, :foobar, 2, [file: "saturn.ex", line: 10]}
             ]
         }
       )
     end
 
     test "with no arguments orders queries by count" do
-      report = Saturn.report()
+      report = capture_io(fn -> Saturn.report() end)
 
-      assert {:ok,
-              [
-                {%{query: "SELECT * FROM users;"}, 2},
-                {%{query: "SELECT * FROM users WHERE id = 5;"}, 1}
-              ]} = report
+      assert """
+             Query: "SELECT * FROM users;"
+             Count: 2
+             Stacktrace:
+               saturn.ex:5: Saturn.fake/1
+
+             Query: "SELECT * FROM users WHERE id = 5;"
+             Count: 1
+             Stacktrace:
+               saturn/foobar.ex:26: Saturn.Foobar.do_thing/3
+               saturn.ex:10: Saturn.foobar/2
+             """ == report
     end
 
     test "can order by queries by time" do
-      report = Saturn.report(:time)
+      report = capture_io(fn -> Saturn.report(:time) end)
 
-      assert {:ok,
-              [
-                {%{query: "SELECT * FROM users;"}, 246_912},
-                {%{query: "SELECT * FROM users WHERE id = 5;"}, 12_345}
-              ]} = report
+      assert """
+             Query: "SELECT * FROM users;"
+             Time: 246912 ms
+             Stacktrace:
+               saturn.ex:5: Saturn.fake/1
+
+             Query: "SELECT * FROM users WHERE id = 5;"
+             Time: 12345 ms
+             Stacktrace:
+               saturn/foobar.ex:26: Saturn.Foobar.do_thing/3
+               saturn.ex:10: Saturn.foobar/2
+             """ == report
     end
 
     test "can provide 'prof' style output" do
-      report = Saturn.report(:prof)
+      report = capture_io(fn -> Saturn.report(:prof) end)
 
-      assert {:ok,
-              """
-              Source                                                                   Count %Count     Time %Time
-              Saturn.fake/1                                                                2     66   246.91    95
-                SELECT * FROM users;                                                       2     66   246.91    95
-              Saturn.Foobar.do_thing/3                                                     1     33    12.35     4
-                Saturn.foobar/2                                                            1     33    12.35     4
-                  SELECT * FROM users WHERE id = 5;                                        1     33    12.35     4\
-              """} == report
+      assert """
+             Source                                                                   Count %Count     Time %Time
+             Saturn.fake/1                                                                2     66   246.91    95
+               SELECT * FROM users;                                                       2     66   246.91    95
+             Saturn.foobar/2                                                              1     33    12.35     4
+               Saturn.Foobar.do_thing/3                                                   1     33    12.35     4
+                 SELECT * FROM users WHERE id = 5;                                        1     33    12.35     4
+             """ == report
     end
   end
 

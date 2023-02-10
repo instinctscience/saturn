@@ -1,10 +1,10 @@
 defmodule Saturn.Reporter do
-  @callback report(%{Saturn.Query.t() => Saturn.QueryStats.t()}) :: term()
+  @callback report(%{Saturn.Query.t() => Saturn.QueryStats.t()}) :: String.t()
 
   @type reporter_specifier :: :count | :time | :prof
 
-  @spec report(reporter_specifier, %{Saturn.Query.t() => Saturn.QueryStats.t()}) :: term()
-  def report(by, queries) do
+  @spec report(%{Saturn.Query.t() => Saturn.QueryStats.t()}, reporter_specifier) :: String.t()
+  def report(queries, by) do
     reporter(by).report(queries)
   end
 
