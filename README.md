@@ -7,23 +7,17 @@ A child-eating monster; a library to help you find and eliminate N+1 queries.
 Once your application is configured to send Ecto telemetry events to Saturn (see below), you can query for the most-made queries:
 
 ```elixir
-Saturn.report()
-#=>[
-#=>  {%Saturn.Aggregator.Query{
-#=>     query: "SELECT DISTINCT o0.\"queue\" FROM \"public\".\"oban_jobs\" AS o0 WHERE (o0.\"state\" = 'available') AND (NOT (o0.\"queue\" IS NULL))",
-#=>     stacktrace: [
-#=>       {Ecto.Repo.Supervisor, :tuplet, 2,
-#=>        [file: 'lib/ecto/repo/supervisor.ex', line: 162]},
-#=>       {MyApp.Repo, :all, 2, [file: 'lib/my_app/repo.ex', line: 2]},
-#=>       {Oban.Plugins.Stager, :notify_queues, 1,
-#=>        [file: 'lib/oban/plugins/stager.ex', line: 131]},
-#=>       {Oban.Plugins.Stager, :"-check_leadership_and_stage/1-fun-0-", 1,
-#=>        [file: 'lib/oban/plugins/stager.ex', line: 98]},
-#=>       {Ecto.Adapters.SQL, :"-checkout_or_transaction/4-fun-0-", 3,
-#=>        [file: 'lib/ecto/adapters/sql.ex', line: 1202]},
-#=>       ...
-#=>   }, 100},
-#=>   ...
+iex> Saturn.report()
+Query: "SELECT DISTINCT o0.\"queue\" FROM \"public\".\"oban_jobs\" AS o0 WHERE (o0.\"state\" = 'available') AND (NOT (o0.\"queue\" IS NULL))"
+Count: 100
+Stacktrace:
+  lib/ecto/repo/supervisor.ex:162: Ecto.Repo.Supervisor.tuplet/2
+  lib/my_app/repo.ex:2: MyApp.Repo.all/2
+  lib/oban/plugins/stager.ex:131: Oban.Plugins.Stager.notify_queues/1
+  lib/oban/plugins/stager.ex:98: Oban.Plugins.Stager.-check_leadership_and_stage/1-fun-0-/1
+  lib/ecto/adapters/sql.ex:1202: Ecto.Adapters.SQL.-checkout_or_transaction/4-fun-0-/3
+  ...
+#=> :ok
 ```
 
 The return format is `{query, count}` where `query` contains the query text as well as the stacktrace and `count` is the number of times the query was made.
@@ -31,28 +25,33 @@ The return format is `{query, count}` where `query` contains the query text as w
 Saturn also supports querying by time:
 
 ```elixir
-Saturn.report(:time)
-#=>[
-#=>  {%Saturn.Aggregator.Query{
-#=>     query: "SELECT DISTINCT o0.\"queue\" FROM \"public\".\"oban_jobs\" AS o0 WHERE (o0.\"state\" = 'available') AND (NOT (o0.\"queue\" IS NULL))",
-#=>     stacktrace: [
-#=>       {Ecto.Repo.Supervisor, :tuplet, 2,
-#=>        [file: 'lib/ecto/repo/supervisor.ex', line: 162]},
-#=>       {MyApp.Repo, :all, 2, [file: 'lib/my_app/repo.ex', line: 2]},
-#=>       {Oban.Plugins.Stager, :notify_queues, 1,
-#=>        [file: 'lib/oban/plugins/stager.ex', line: 131]},
-#=>       {Oban.Plugins.Stager, :"-check_leadership_and_stage/1-fun-0-", 1,
-#=>        [file: 'lib/oban/plugins/stager.ex', line: 98]},
-#=>       {Ecto.Adapters.SQL, :"-checkout_or_transaction/4-fun-0-", 3,
-#=>        [file: 'lib/ecto/adapters/sql.ex', line: 1202]},
-#=>       ...
-#=>   }, 157},
-#=>   ...
+iex> Saturn.report(:time)
+Query: "SELECT DISTINCT o0.\"queue\" FROM \"public\".\"oban_jobs\" AS o0 WHERE (o0.\"state\" = 'available') AND (NOT (o0.\"queue\" IS NULL))"
+Time: 157 ms
+Stacktrace:
+  lib/ecto/repo/supervisor.ex:162: Ecto.Repo.Supervisor.tuplet/2
+  lib/my_app/repo.ex:2: MyApp.Repo.all/2
+  lib/oban/plugins/stager.ex:131: Oban.Plugins.Stager.notify_queues/1
+  lib/oban/plugins/stager.ex:98: Oban.Plugins.Stager.-check_leadership_and_stage/1-fun-0-/1
+  lib/ecto/adapters/sql.ex:1202: Ecto.Adapters.SQL.-checkout_or_transaction/4-fun-0-/3
+  ...
+#=> :ok
 ```
 
-Here, the second element of each tuple is the number of milliseconds that have been spent running the query (cumulatively).
+Lastly, Saturn supports a prof-style output (a la `eprof`, `fprof`, etc) to help you identify cost centers:
 
-If you want to clear out all recorded queries, invoke `Saturn.clear/0`:
+```elixir
+iex> Saturn.report(:prof)
+Source                                                                   Count %Count     Time %Time
+Saturn.fake/1                                                                2     66   246.91    95
+  SELECT * FROM users;                                                       2     66   246.91    95
+Saturn.foobar/2                                                              1     33    12.35     4
+  Saturn.Foobar.do_thing/3                                                   1     33    12.35     4
+    SELECT * FROM users WHERE id = 5;                                        1     33    12.35     4
+```
+
+
+If you want to clear all recorded queries, invoke `Saturn.clear/0`:
 
 ```elixir
 Saturn.clear()
